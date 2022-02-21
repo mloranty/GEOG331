@@ -19,9 +19,10 @@ colnames(datW) <-	colnames(sensorInfo)
 
 library(lubridate)
 
-#convert to POSIXct ti standardize format
+#convert to POSIXct to standardize format
 dates <- mdy_hm(datW$timestamp, tz= "America/New_York")
 #calculate day of year
+
 #create a function. The names of the arguments for your function will be in parentheses. Everything in curly brackets will be run each time the function is run.
 assert <- function(statement,err.message){
   #if evaluates if a statement is true or false for a single item
