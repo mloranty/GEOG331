@@ -18,15 +18,19 @@ summary(fit)
 plot(flower$Sepal.Length,flower$Petal.Length,
      main = "Iris virginica",
      xlab = "Sepal Length",
-     ylab = "Petal Length")
+     ylab = "Petal Length",
+     col = "purple", pch = 16)
 
 # plot the residuals, stored in regression summary
 plot(flower$Sepal.Length,summary(fit)$residuals,
      xlab = "Sepal Length", 
-     ylab = "Residuals")
+     ylab = "Residuals", 
+     col = "purple",
+     pch = 16)
 
 # add a horizontal line ro reference
-abline(h=0)
+abline(h=0,
+       lty = "dashed")
 
 # histogram of residuals
 hist(summary(fit)$residuals)
