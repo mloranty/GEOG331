@@ -6,7 +6,7 @@
 
 
 #susbet for Iris virginica
-flower <- iris[iris$Species=="virginica",]
+flower <- iris[iris$Species == "virginica",]
 
 # linear model relating petal length to sepal length
 fit <- lm(flower$Petal.Length~flower$Sepal.Length)
@@ -33,7 +33,10 @@ abline(h=0,
        lty = "dashed")
 
 # histogram of residuals
-hist(summary(fit)$residuals)
+hist(summary(fit)$residuals,
+     main = "Regression Residuals",
+     xlab = "Residual",
+     col = "purple")
 
 # shapiro wilks test
 shapiro.test(summary(fit)$residuals)
