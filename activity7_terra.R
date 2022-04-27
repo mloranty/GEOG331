@@ -14,7 +14,7 @@ setwd("Z:/GEOG331_S22/data/oneida/")
 f <- list.files(path = "sentinel", pattern = "T18", full.names = T)
 
 # read the list of files as a single multi-band raster object
-rsdat <- rast(t)
+rsdat <- rast(f)
 
 # create a vector of band names so we can keep track of them
 b <- c("B2","B3","B4","B5","B6","B7","B8","B11","B12")
