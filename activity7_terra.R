@@ -117,10 +117,10 @@ plot(rf_prediction)
 landclass
 
 landclass$cols <-c("#a6d854","#8da0cb","#66c2a5",
-                   "#fc8d62","#ffffb3","#ffd92f")
+                   "#fc8d62","#148011","#ffd92f")
 #make plot and hide legend
 plot(rf_prediction,
-     breaks=seq(0,6), 
+     type = "classes", 
      col=landclass$cols ,
      legend=FALSE, axes=FALSE)
 legend("bottomleft", paste(landclass$landcover),
