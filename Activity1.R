@@ -10,4 +10,10 @@
 
 print("Hello World")
 
+# try some math
+6^6
 
+234+8
+
+a <- 6234
+a*5
