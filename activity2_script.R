@@ -14,6 +14,6 @@ heights_cm <- heights*100
 Mat<-matrix(c(1,2,3,4,5,6), ncol=2, byrow=TRUE)
 
 
-datW <- read.csv("Z:\\GEOG331_S22\data\noaa_weather\2011124.csv")
-
+datW <- read.csv("Z:/GEOG331_F25/mloranty/data/noaa_weather/2011124.csv", 
+                 stringsAsFactors = T)
 
