@@ -2,8 +2,7 @@
 #take a look at it 
 head(iris)
 #load in some tidyverse packages
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 
 #####################################
 ##### Part 1: for loops         #####
