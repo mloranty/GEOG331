@@ -1,10 +1,10 @@
 ---
-title: "Geopatial Data in R"
+title: "Geospatial Data in R"
 format: html
 editor: visual
 ---
 
-## R Packages for Geopatial Data
+## R Packages for Geospatial Data
 
 There is an extensive and rapidly evolving set of packages designed for working with spatial data in R. One of the most prominent is the [terra package](https://cran.r-project.org/web/packages/terra/index.html), and we'll begin by using this. Since many of you have proposed to use geospatial data for your projects you'll want to familiarize yourself with this package and explore many of the other ones that are out there. An important caveat here is that because things change rapidly you may come across packages that are outdated or that do not work properly.
 
@@ -15,14 +15,49 @@ Since many of you plan to use the [National Land Cover Data](https://www.usgs.go
 ```{r}
 #| message: false
 library(terra)
+library(tidyterra)
 library(FedData)
 ```
 
-You can add options to executable code like this
+Two of the most important functions we'll use from the terra package are the `rast` and `vect` functions, which are designed to read in raster and vector data, respectively. These create special types of objects that include the projection and other types of information unique to geospatial data. The FedData package relies on terra for reading and manipulating environmental data. To start, let's download some NLCD data using the `get_nlcd` function. The FedData package includes a polygon outline of Mesa Verde National Park in Montana, and if we look at the help for `get_nlcd` you'll see that we can use a template to crop the data to an area we're interested in. So we'll crop the data from 2016 to the park boundary. Notice that we are also specifying the directory where we want the downloaded data. You should change this to somewhere in your own folder on the geography server.
 
 ```{r}
-#| echo: false
-2 * 2
+
+nlcd_meve16 <-get_nlcd(template = FedData::meve,
+                label = "meve",
+                year = 2016,
+                extraction.dir = "Z:/GEOG331_F25/mloranty/data/")
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+Now let's have a look at our data.
+
+```{r}
+nlcd_meve16
+```
+
+You'll see there is a lot of useful information displayed here. This includes information on the cell size, spatial extent, projected coordinate systems, and cell values. Let's plot the data and see how it looks.
+
+```{r}
+terra::plot(nlcd_meve16)
+```
+
+Now let's have a quick look at a vector data set. This time we'll look at the [Circumpolar Arctic Vegetation Map](https://www.geobotany.uaf.edu/cavm/) that describes land cover for the Arctic tundra biome. This time we'll use a shapefile we've downloaded already. Before running the code below copy the cp_veg_la_shp from the data directory into your own folder. Notice that we're just pointing to a directory here instead of a single file. This is because vector data are often delivered in shapefile format, which is actually made of of several different files. Our vect function knows to look for this group of files, which should all be in their own directory, with nothing else. After you've copied the data modify the code below to point to your folder then run it.
+
+```{r}
+cavm <- vect("Z:/GEOG331_F25/mloranty/data/cp_veg_la_shp/")
+
+cavm
+```
+
+We can see that this includes a lot of different information. For vector files we can actually interact with the attribute table as if it were a dataframe.
+
+```{r}
+head(cavm)
+```
+
+Now we'll make a quick plot to have a look at the data. The values here are initially as meaningful, but we'll worry about that later.
+
+```{r}
+terra::plot(cavm, y = "PHYSIOG")
+
+```

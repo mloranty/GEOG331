@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Geopatial Data in R</title>
+<title>Geospatial Data in R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Geopatial Data in R</h1>
+<h1 class="title">Geospatial Data in R</h1>
 </div>
 
 
@@ -96,8 +96,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="r-packages-for-geopatial-data" class="level2">
-<h2 class="anchored" data-anchor-id="r-packages-for-geopatial-data">R Packages for Geopatial Data</h2>
+<section id="r-packages-for-geospatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="r-packages-for-geospatial-data">R Packages for Geospatial Data</h2>
 <p>There is an extensive and rapidly evolving set of packages designed for working with spatial data in R. One of the most prominent is the <a href="https://cran.r-project.org/web/packages/terra/index.html">terra package</a>, and we’ll begin by using this. Since many of you have proposed to use geospatial data for your projects you’ll want to familiarize yourself with this package and explore many of the other ones that are out there. An important caveat here is that because things change rapidly you may come across packages that are outdated or that do not work properly.</p>
 </section>
 <section id="an-example-with-land-cover-data" class="level2">
@@ -105,15 +105,87 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Since many of you plan to use the <a href="https://www.usgs.gov/centers/eros/science/annual-national-land-cover-database">National Land Cover Data</a> Set in your projects, I thought we could start with a few examples here. As I was looking around for data and resources I came across an R package called <a href="https://cran.r-project.org/web/packages/FedData/index.html">FedData</a> that allows us to directly download a variety of geospatial data sets produced and maintained by the federal government, including the NLCD! To start, install and load the terra and FedData packages.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FedData)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FedData)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>You can add options to executable code like this</p>
+<p>Two of the most important functions we’ll use from the terra package are the <code>rast</code> and <code>vect</code> functions, which are designed to read in raster and vector data, respectively. These create special types of objects that include the projection and other types of information unique to geospatial data. The FedData package relies on terra for reading and manipulating environmental data. To start, let’s download some NLCD data using the <code>get_nlcd</code> function. The FedData package includes a polygon outline of Mesa Verde National Park in Montana, and if we look at the help for <code>get_nlcd</code> you’ll see that we can use a template to crop the data to an area we’re interested in. So we’ll crop the data from 2016 to the park boundary. Notice that we are also specifying the directory where we want the downloaded data. You should change this to somewhere in your own folder on the geography server.</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>nlcd_meve16 <span class="ot">&lt;-</span><span class="fu">get_nlcd</span>(<span class="at">template =</span> FedData<span class="sc">::</span>meve,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="st">"meve"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">year =</span> <span class="dv">2016</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">extraction.dir =</span> <span class="st">"Z:/GEOG331_F25/mloranty/data/"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s have a look at our data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>nlcd_meve16</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 4</code></pre>
+<pre><code>class       : SpatRaster 
+dimensions  : 710, 627, 1  (nrow, ncol, nlyr)
+resolution  : 30, 30  (x, y)
+extent      : -1100475, -1081665, 1639875, 1661175  (xmin, xmax, ymin, ymax)
+coord. ref. : NAD83 / Conus Albers (EPSG:5070) 
+source      : meve_NLCD_Land_Cover_2016.tif 
+color table : 1 
+categories  : Class, Color, Description 
+name        :                        Class 
+min value   :                   Open Water 
+max value   : Emergent Herbaceous Wetlands </code></pre>
 </div>
 </div>
-<p>The <code>echo: false</code> option disables the printing of code (only output is displayed).</p>
+<p>You’ll see there is a lot of useful information displayed here. This includes information on the cell size, spatial extent, projected coordinate systems, and cell values. Let’s plot the data and see how it looks.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">plot</span>(nlcd_meve16)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="geospatial_data_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now let’s have a quick look at a vector data set. This time we’ll look at the <a href="https://www.geobotany.uaf.edu/cavm/">Circumpolar Arctic Vegetation Map</a> that describes land cover for the Arctic tundra biome. This time we’ll use a shapefile we’ve downloaded already. Before running the code below copy the cp_veg_la_shp from the data directory into your own folder. Notice that we’re just pointing to a directory here instead of a single file. This is because vector data are often delivered in shapefile format, which is actually made of of several different files. Our vect function knows to look for this group of files, which should all be in their own directory, with nothing else. After you’ve copied the data modify the code below to point to your folder then run it.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cavm <span class="ot">&lt;-</span> <span class="fu">vect</span>(<span class="st">"Z:/GEOG331_F25/mloranty/data/cp_veg_la_shp/"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>cavm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> class       : SpatVector 
+ geometry    : polygons 
+ dimensions  : 3841, 3  (geometries, attributes)
+ extent      : -2460477, 3699347, -3291502, 2585459  (xmin, xmax, ymin, ymax)
+ source      : cp_veg_la_shp (cp_veg_la)
+ coord. ref. : North_Pole_Lambert_Azimuthal_Equal_Area_180 
+ names       : PHYSIOG Shape_Leng Shape_Area
+ type        :   &lt;int&gt;      &lt;num&gt;      &lt;num&gt;
+ values      :       1  1.583e+05  5.214e+08
+                     1  4.972e+04  1.454e+08
+                     1  7.504e+04  1.877e+08</code></pre>
+</div>
+</div>
+<p>We can see that this includes a lot of different information. For vector files we can actually interact with the attribute table as if it were a dataframe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cavm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  PHYSIOG Shape_Leng Shape_Area
+1       1  158311.31  521412508
+2       1   49718.85  145382067
+3       1   75041.38  187706899
+4       1  111912.31  313852769
+5       1  212950.17 1328748376
+6       1  105882.91  448644985</code></pre>
+</div>
+</div>
+<p>Now we’ll make a quick plot to have a look at the data. The values here are initially as meaningful, but we’ll worry about that later.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">plot</span>(cavm, <span class="at">y =</span> <span class="st">"PHYSIOG"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="geospatial_data_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 
 </main>
