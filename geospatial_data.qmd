@@ -1,0 +1,28 @@
+---
+title: "Geopatial Data in R"
+format: html
+editor: visual
+---
+
+## R Packages for Geopatial Data
+
+There is an extensive and rapidly evolving set of packages designed for working with spatial data in R. One of the most prominent is the [terra package](https://cran.r-project.org/web/packages/terra/index.html), and we'll begin by using this. Since many of you have proposed to use geospatial data for your projects you'll want to familiarize yourself with this package and explore many of the other ones that are out there. An important caveat here is that because things change rapidly you may come across packages that are outdated or that do not work properly.
+
+## An Example with Land Cover Data
+
+Since many of you plan to use the [National Land Cover Data](https://www.usgs.gov/centers/eros/science/annual-national-land-cover-database) Set in your projects, I thought we could start with a few examples here. As I was looking around for data and resources I came across an R package called [FedData](https://cran.r-project.org/web/packages/FedData/index.html) that allows us to directly download a variety of geospatial data sets produced and maintained by the federal government, including the NLCD! To start, install and load the terra and FedData packages.
+
+```{r}
+#| message: false
+library(terra)
+library(FedData)
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
