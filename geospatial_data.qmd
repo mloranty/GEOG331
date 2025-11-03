@@ -55,7 +55,7 @@ We can see that this includes a lot of different information. For vector files w
 head(cavm)
 ```
 
-Now we'll make a quick plot to have a look at the data. The values here are initially as meaningful, but we'll worry about that later.
+Now we'll make a quick plot to have a look at the data. The values here are not initially as meaningful, but we'll worry about that later.
 
 ```{r}
 terra::plot(cavm, y = "PHYSIOG")
