@@ -1,0 +1,45 @@
+---
+title: "Raster Data"
+format: html
+editor: visual
+---
+
+## Raster Data
+
+Today we'll use the [terra package](https://cran.r-project.org/web/packages/terra/index.html) to explore Landsat remote sensing data. We'll be working with [Landsat 9 Collection 2 Level](https://www.usgs.gov/landsat-missions/landsat-collection-2-level-2-science-products) science data products. The data come have been processed to convert the radiance measured by the satellite sensor to surface reflectance using some sophisticated atmospheric modeling. Start a new script for this exercise, and load the terra package, along with any others that you think you might use.
+
+```{r}
+#| message: false
+library(terra)
+library(tidyterra)
+library(FedData)
+```
+
+## Loading Landsat Data
+
+To begin, let's list all of the files in the landsat directory within our class data folder. We'll create a vector to store each of the file names, and use the full.names = T argument to make sure we have the full file path. Note that we're not copying the data to our own folder because the files are large.
+
+```{r}
+f <- list.files("Z:/GEOG331_F25/data/landsat", full.names = T)
+
+f
+
+```
+
+You can sere there is a lot here, 19 files total. Any guesses as to what these might be based on the file names? Let's take a look at one of the files we're interested in, we'll read in Band 5, which is the near-infrared band.
+
+```{r}
+b5 <- rast("Z:/GEOG331_F25/data/landsat/LC09_L2SP_015030_20250804_20250805_02_T1_SR_B5.TIF")
+
+b5
+```
+
+We can see the data has 30m pixel resolution as expected. Let's create a summary of the pixel values, and make a quick plot of the data.
+
+```{r}
+summary(b5)
+
+plot(b5)
+```
+
+What does this information tell us about the data, are the values what we expect them to be? Reflectance should range from 0-1, but these values are much larger.
