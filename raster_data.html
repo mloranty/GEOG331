@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Raster Data</title>
+<title>Spatial Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Raster Data</h1>
+<h1 class="title">Spatial Analysis</h1>
 </div>
 
 
@@ -98,7 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="raster-data" class="level2">
 <h2 class="anchored" data-anchor-id="raster-data">Raster Data</h2>
-<p>Today we’ll use the <a href="https://cran.r-project.org/web/packages/terra/index.html">terra package</a> to explore Landsat remote sensing data. We’ll be working with <a href="https://www.usgs.gov/landsat-missions/landsat-collection-2-level-2-science-products">Landsat 9 Collection 2 Level</a> science data products. The data come have been processed to convert the radiance measured by the satellite sensor to surface reflectance using some sophisticated atmospheric modeling. Start a new script for this exercise, and load the terra package, along with any others that you think you might use.</p>
+<p>Today we’ll use the <a href="https://cran.r-project.org/web/packages/terra/index.html">terra package</a> to explore Landsat remote sensing data and perform spatial analysis using raster and vector data. We’ll be working with <a href="https://www.usgs.gov/landsat-missions/landsat-collection-2-level-2-science-products">Landsat 9 Collection 2 Level</a> science data products. The data come have been processed to convert the radiance measured by the satellite sensor to surface reflectance using some sophisticated atmospheric modeling. Start a new script for this exercise, and load the terra package, along with any others that you think you might use.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
@@ -134,11 +134,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 [19] "Z:/GEOG331_F25/data/landsat/LC09_L2SP_015030_20250804_20250805_02_T1_ST_URAD.TIF"      </code></pre>
 </div>
 </div>
-<p>You can sere there is a lot here, 19 files total. Any guesses as to what these might be based on the file names? Let’s take a look at one of the files we’re interested in, we’ll read in Band 5, which is the near-infrared band.</p>
+<p>You can sere there is a lot here, 19 files total. Any guesses as to what these might be based on the file names? Let’s take a look at one of the files we’re interested in, we’ll read in Surface Reflectance Bands 1-7, which is what we’re primarily interested in.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>b5 <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"Z:/GEOG331_F25/data/landsat/LC09_L2SP_015030_20250804_20250805_02_T1_SR_B5.TIF"</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>b5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read in files 3-10 as a single multi-band raster</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>lc <span class="ot">&lt;-</span> <span class="fu">rast</span>(f[<span class="dv">3</span><span class="sc">:</span><span class="dv">10</span>])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#look at Band 5 to get information about the data</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>lc[[<span class="dv">5</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>class       : SpatRaster 
 dimensions  : 7911, 7811, 1  (nrow, ncol, nlyr)
@@ -151,7 +153,8 @@ name        : LC09_L2SP_015030_20250804_20250805_02_T1_SR_B5 </code></pre>
 </div>
 <p>We can see the data has 30m pixel resolution as expected. Let’s create a summary of the pixel values, and make a quick plot of the data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(b5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a summary of the data values</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lc[[<span class="dv">5</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: [summary] used a sample</code></pre>
 </div>
@@ -165,7 +168,8 @@ name        : LC09_L2SP_015030_20250804_20250805_02_T1_SR_B5 </code></pre>
  Max.   :42619                                 
  NA's   :34207                                 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(b5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make a quick plot to see how the data looks</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lc[[<span class="dv">5</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -174,7 +178,75 @@ name        : LC09_L2SP_015030_20250804_20250805_02_T1_SR_B5 </code></pre>
 </div>
 </div>
 </div>
-<p>What does this information tell us about the data, are the values what we expect them to be? Reflectance should range from 0-1, but these values are much larger.</p>
+<p>What does the plotand summary tell us about the data, are the values what we expect them to be? Reflectance should range from 0-1, but these values are much larger. If we take a closer look at the <a href="https://www.usgs.gov/landsat-missions/landsat-collection-2-level-2-science-products">Landsat Collection 2 description</a> we can see there is something called a <em>scaling factor</em> - we need to use this to convert the Digital Number reflectance. Why might this be the case?</p>
+<p>To quickly visualize how the scale factor works we can apply it right inside our plot call. Note that this is not permanent, because we’re not creating a new object or writing the transformed data to file. Looking at the plot below, we can see that the values generally range from 0-1. There are some small bright yellow areas in the northern part of</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we can perform math on the raster layer right inside the ploit call</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lc[[<span class="dv">5</span>]]<span class="sc">*</span><span class="fl">0.0000275-0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="raster_data_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In many cases well want to permanently convert those DN values to surface reflectance before further analysis. But today we’re going to calculate the <em>Normalized Difference Vegetation Index</em> (NDVI) which is the difference between Near Infrared and Red reflectance divided by their sum. Since the formulation is a ratio that gives us a value between zero and one, we will get the same value regardless of whether or not we apply the scale factor, so we can skip it this time. We’ll calculate and plot NDVI below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate ndvi</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ndvi <span class="ot">&lt;-</span> (lc[[<span class="dv">5</span>]]<span class="sc">-</span>lc[[<span class="dv">4</span>]])<span class="sc">/</span>(lc[[<span class="dv">5</span>]]<span class="sc">+</span>lc[[<span class="dv">4</span>]])</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ndvi) <span class="ot">&lt;-</span> <span class="st">"NDVI"</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># create a quick plot to see how the data looks</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ndvi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="raster_data_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These values look reasonable. The water bodies are near zero, and the rest of the values vary between zero and one. Let’s imagine we’d like to use this data to see if vegetation is more productive on lands managed by the New York State Department of Conservation. We can read in a shapefile for all DEC managed lands in the state, but we’ll just focus on areas in Madison County for now.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read in the shape file of dec lands</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dec <span class="ot">&lt;-</span> <span class="fu">vect</span>(<span class="st">"Z:/GEOG331_F25/data/NYS_DEC_Lands/"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># remember from last time that the attribute table just like a data frame</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># we'll use this to subset to Madison County</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>mad_dec <span class="ot">&lt;-</span> dec[dec<span class="sc">$</span>COUNTY<span class="sc">==</span><span class="st">"MADISON"</span>,]</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># we could also use the crop function</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># what dimensions of our raster layer are used to crop the vector layer</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>lc_dec <span class="ot">&lt;-</span> <span class="fu">crop</span>(dec,lc)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># lastly, create a buffer around the Madison County DEC lands</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co"># what are the units? </span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>mad_buf <span class="ot">&lt;-</span> <span class="fu">buffer</span>(mad_dec, <span class="at">width =</span> <span class="dv">1000</span>, <span class="at">singlesided =</span> T)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co"># create a plot to look at our Madison County data</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mad_dec, <span class="at">col =</span> <span class="st">"red"</span>)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mad_buf, <span class="at">col =</span> <span class="st">"yellow"</span>, <span class="at">add =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="raster_data_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Lastly, we can use the zonal function to calculate NDVI for our DEC parcels and the corresponding buffers. Note that we can add these new calculations right to the attribute table of our vector file.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate ndvi for dec lands</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mad_dec<span class="sc">$</span>ndvi_in <span class="ot">&lt;-</span> <span class="fu">zonal</span>(ndvi, mad_dec, <span class="at">fun =</span> <span class="st">"mean"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate ndvi for the buffer outside dec lands</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>mad_dec<span class="sc">$</span>ndvi_out <span class="ot">&lt;-</span> <span class="fu">zonal</span>(ndvi, mad_buf, <span class="at">fun =</span> <span class="st">"mean"</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the difference to see if DEC lands are more productive</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>mad_dec<span class="sc">$</span>ndvi_dif <span class="ot">&lt;-</span> mad_dec<span class="sc">$</span>ndvi_in<span class="sc">-</span>mad_dec<span class="sc">$</span>ndvi_out</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Are DEC lands more productive? Are there other factors we should consider before drawing conclusions from this analysis? One other thing we should take note of is the projected coordinate systems of our data sets; are they the same? If not, how did our zonal analysis work?</p>
 </section>
 
 </main>
